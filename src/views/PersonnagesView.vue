@@ -1,9 +1,17 @@
 <template>
   <div>
     <h1>Liste des Personnages</h1>
+    <div class="pagination-info">
+      <button @click="fetchPage(currentPage - 1)" :disabled="currentPage === 1">Page précédente</button>
+      <span>Page {{ currentPage }} / {{ totalPages }}</span>
+      <button @click="fetchPage(currentPage + 1)" :disabled="currentPage === totalPages">Page suivante</button>
+    </div>
     <div class="personnages-container">
       <div v-for="personnage in personnages" :key="personnage.id" class="personnage-card">
         <h2>{{ personnage.attributes.name }}</h2>
+        
+        <img v-if="personnage.attributes.image" :src="personnage.attributes.image" :alt="personnage.attributes.name">
+        <p><strong>Maison:</strong> {{ personnage.attributes.house }}</p>
         <p><strong>Genre:</strong> {{ personnage.attributes.gender }}</p>
         <p><strong>Né en:</strong> {{ personnage.attributes.born }}</p>
         <p><strong>Marié:</strong> {{ personnage.attributes.marital_status }}</p>
@@ -27,7 +35,6 @@
   </div>
 </template>
 
-
 <script>
 import axios from 'axios';
 
@@ -35,25 +42,38 @@ export default {
   name: 'ListePersonnages',
   data() {
     return {
-      personnages: []
+      personnages: [],
+      currentPage: 1,
+      totalPages: 100,
     };
   },
   mounted() {
-    axios.get('https://api.potterdb.com/v1/characters')
-      .then(response => {
-        console.log('Données de l\'API:', response.data);
-        this.personnages = response.data.data;
-      })
-      .catch(error => {
-        console.error('Erreur lors de la récupération des personnages:', error);
-      });
+    this.fetchPage(this.currentPage);
   },
-  // methods: {
-  //   formatWands(wands) {
-  //     // Formatez les informations sur les baguettes comme vous le souhaitez
-  //     return wands.map(wand => `${wand.wood} - ${wand.core}`).join(', ');
-  //   }
-  // }
+  methods: {
+    fetchPage(pageNumber) {
+      if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+        axios.get(`https://api.potterdb.com/v1/characters?page[number]=${pageNumber}`)
+          .then(response => {
+            console.log('Données de l\'API:', response.data);
+            this.personnages = response.data.data;
+            this.currentPage = pageNumber;
+
+            // Récupérer le nombre total de pages à partir de l'en-tête Link
+            const linkHeader = response.headers.link;
+            if (linkHeader) {
+              const totalPagesMatch = linkHeader.match(/page=(\d+)>; rel="last"/);
+              if (totalPagesMatch) {
+                this.totalPages = parseInt(totalPagesMatch[1]);
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Erreur lors de la récupération des personnages:', error);
+          });
+      }
+    },
+  },
 };
 </script>
 
@@ -72,4 +92,9 @@ export default {
   border-radius: 8px;
   box-sizing: border-box;
 }
+
+.pagination-info {
+  margin-bottom: 10px;
+}
 </style>
+
