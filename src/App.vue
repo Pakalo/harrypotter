@@ -1,10 +1,23 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div id="app">
+    <!-- Utiliser votre composant de barre de navigation -->
+    <NavBar/>
+    <!-- Inclure le composant router-view pour afficher le contenu de chaque route -->
+    <router-view/>
+  </div>
 </template>
+
+<script>
+// Importer votre composant de barre de navigation
+import NavBar from '@/components/NavBar.vue';
+
+export default {
+  components: {
+    // Enregistrer votre composant de barre de navigation pour l'utiliser dans ce composant
+    NavBar
+  }
+}
+</script>
 
 <style>
 #app {
@@ -14,6 +27,8 @@
   text-align: center;
   color: #2c3e50;
 }
+
+/* Vous pouvez conserver vos styles de la barre de navigation ici */
 
 nav {
   padding: 30px;
