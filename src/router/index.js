@@ -1,14 +1,12 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Accueil from '@/views/AccueilView.vue'
-import Potions from '@/views/LivresView.vue'
-import Sorts from '@/views/PersonnagesView.vue'
-import Livres from '@/views/PotionsView.vue'
-import Personnages from '@/views/SortsView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import Accueil from '@/views/AccueilView.vue';
+import Potions from '@/views/PotionsView.vue';
+import Sorts from '@/views/SortsView.vue';
+import Livres from '@/views/LivresView.vue';
+import Personnages from '@/views/PersonnagesView.vue';
 
-Vue.use(Router)
-
-export default new Router({
+const router = createRouter({
+  history: createWebHistory(),
   routes: [
     {
       path: '/',
@@ -36,4 +34,6 @@ export default new Router({
       component: Personnages
     }
   ]
-})
+});
+
+export default router;
