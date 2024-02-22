@@ -18,8 +18,6 @@
         <p><strong>Famille:</strong> {{ personnage.attributes.family_member?.join(', ') }}</p>
         
         <!-- Nouvelles informations -->
-        <p><strong>Couleur des yeux:</strong> {{ personnage.attributes.eye_color }}</p>
-        <p><strong>Couleur des cheveux:</strong> {{ personnage.attributes.hair_color }}</p>
         <p><strong>Taille:</strong> {{ personnage.attributes.height }}</p>
         <p><strong>Statut de sang:</strong> {{ personnage.attributes.blood_status }}</p>
         <p><strong>Métiers:</strong> {{ personnage.attributes.jobs?.join(', ') }}</p>
@@ -44,7 +42,7 @@ export default {
     return {
       personnages: [],
       currentPage: 1,
-      totalPages: 100,
+      totalPages: 47,
     };
   },
   mounted() {
