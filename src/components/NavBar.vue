@@ -10,8 +10,8 @@
     <div class="search-container">
       <input v-model="searchQuery" @input="handleSearch" type="text" class="searchBar" placeholder="Rechercher 🔍">
       <!-- Affichez les résultats en fonction du type de résultat -->
-      <div v-if="searchResults.length > 0" class="search-results">
-        <div v-for="result in searchResults" :key="result.id" class="search-result">
+      <ul v-if="searchResults.length > 0" class="search-results">
+        <li v-for="result in searchResults" :key="result.id" class="search-result">
           <template v-if="result.type === 'character'">
             <p>{{ result.attributes.name }}</p>
             <!-- Affichez d'autres informations pour les personnages -->
@@ -24,8 +24,8 @@
             <p>{{ result.attributes.name }}</p>
             <!-- Affichez d'autres informations pour les potions -->
           </template>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   </nav>
 </template>
@@ -123,20 +123,23 @@ li:hover {
 /* Style pour les résultats de recherche */
 .search-results {
   position: absolute;
-  top: 100%; /* Place les résultats juste en dessous de la barre de recherche */
+  top: calc(100% + 5px); /* Place les résultats juste en dessous de la barre de recherche */
   left: 0;
   width: 100%;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-top: none; /* Supprime la bordure supérieure pour une apparence plus propre */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: 150px; /* Limite la hauteur des résultats pour un affichage plus compact */
   overflow-y: auto; /* Ajoute une barre de défilement si nécessaire */
+  max-height: 150px; /* Limite la hauteur des résultats pour un affichage plus compact */
 }
 
 .search-result {
   padding: 10px;
   border-bottom: 1px solid #ddd;
+  cursor: pointer;
 }
 
+.search-result:hover {
+  background-color: #f1f1f1;
+}
 </style>
