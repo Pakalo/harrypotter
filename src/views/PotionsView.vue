@@ -6,7 +6,10 @@
       <span>Page {{ currentPage }} / {{ totalPages }}</span>
       <button @click="fetchPage(currentPage + 1)" :disabled="currentPage === totalPages">Page suivante</button>
     </div>
-    <div class="potions-container">
+    
+    <div v-if="loading" class="loading-indicator">Chargement en cours...</div>
+
+    <div v-if="!loading" class="potions-container">
       <div v-for="potion in potions" :key="potion.id" class="potion-card">
         <h2>{{ potion.attributes.name }}</h2>
         
@@ -39,6 +42,7 @@ export default {
       potions: [],
       currentPage: 1,
       totalPages: 2, // Mettez à jour avec le nombre total de pages
+      loading: false, // Added loading indicator
     };
   },
   mounted() {
@@ -46,6 +50,8 @@ export default {
   },
   methods: {
     fetchPage(pageNumber) {
+      this.loading = true; // Set loading to true when starting to fetch data
+      
       if (pageNumber >= 1 && pageNumber <= this.totalPages) {
         axios.get(`https://api.potterdb.com/v1/potions?page[number]=${pageNumber}`)
           .then(response => {
@@ -64,6 +70,9 @@ export default {
           })
           .catch(error => {
             console.error('Erreur lors de la récupération des potions:', error);
+          })
+          .finally(() => {
+            this.loading = false; // Set loading to false when data fetching is complete
           });
       }
     },
@@ -89,5 +98,11 @@ export default {
 
 .pagination-info {
   margin-bottom: 10px;
+}
+
+.loading-indicator {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
 }
 </style>

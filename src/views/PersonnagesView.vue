@@ -6,7 +6,10 @@
       <span>Page {{ currentPage }} / {{ totalPages }}</span>
       <button @click="fetchPage(currentPage + 1)" :disabled="currentPage === totalPages">Page suivante</button>
     </div>
-    <div class="personnages-container">
+    
+    <div v-if="loading" class="loading-indicator">Chargement en cours...</div>
+
+    <div v-if="!loading" class="personnages-container">
       <div v-for="personnage in personnages" :key="personnage.id" class="personnage-card">
         <h2>{{ personnage.attributes.name }}</h2>
         
@@ -43,6 +46,7 @@ export default {
       personnages: [],
       currentPage: 1,
       totalPages: 47,
+      loading: false, // Added loading indicator
     };
   },
   mounted() {
@@ -50,6 +54,8 @@ export default {
   },
   methods: {
     fetchPage(pageNumber) {
+      this.loading = true; // Set loading to true when starting to fetch data
+      
       if (pageNumber >= 1 && pageNumber <= this.totalPages) {
         axios.get(`https://api.potterdb.com/v1/characters?page[number]=${pageNumber}`)
           .then(response => {
@@ -68,6 +74,9 @@ export default {
           })
           .catch(error => {
             console.error('Erreur lors de la récupération des personnages:', error);
+          })
+          .finally(() => {
+            this.loading = false; // Set loading to false when data fetching is complete
           });
       }
     },
@@ -94,5 +103,10 @@ export default {
 .pagination-info {
   margin-bottom: 10px;
 }
-</style>
 
+.loading-indicator {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: bold;
+}
+</style>
