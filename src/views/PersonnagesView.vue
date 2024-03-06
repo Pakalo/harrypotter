@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h1>Liste des Personnages</h1>
+    <div class="top-of-page">
+      <input type="text" v-model="searchQuery" @input="search" placeholder="🔎 Rechercher un personnage" class="search-bar">
+      <h1>Liste des Personnages</h1>
+    </div>
     <div class="pagination-info">
       <button @click="fetchPage(currentPage - 1)" :disabled="currentPage === 1">Page précédente</button>
       <span>Page {{ currentPage }} / {{ totalPages }}</span>
@@ -10,7 +13,7 @@
     <div v-if="loading" class="loading-indicator">Chargement en cours...</div>
 
     <div v-if="!loading" class="personnages-container">
-      <div v-for="personnage in personnages" :key="personnage.id" class="personnage-card">
+      <div v-for="personnage in filteredPersonnages" :key="personnage.id" class="personnage-card">
         <h2>{{ personnage.attributes.name }}</h2>
         
         <img v-if="personnage.attributes.image" :src="personnage.attributes.image" :alt="personnage.attributes.name">
@@ -46,15 +49,23 @@ export default {
       personnages: [],
       currentPage: 1,
       totalPages: 47,
-      loading: false, // Added loading indicator
+      loading: false,
+      searchQuery: '',
     };
+  },
+  computed: {
+    filteredPersonnages() {
+      return this.personnages.filter(personnage => {
+        return personnage.attributes.name.toLowerCase().includes(this.searchQuery.toLowerCase());
+      });
+    },
   },
   mounted() {
     this.fetchPage(this.currentPage);
   },
   methods: {
     fetchPage(pageNumber) {
-      this.loading = true; // Set loading to true when starting to fetch data
+      this.loading = true;
       
       if (pageNumber >= 1 && pageNumber <= this.totalPages) {
         axios.get(`https://api.potterdb.com/v1/characters?page[number]=${pageNumber}`)
@@ -63,7 +74,6 @@ export default {
             this.personnages = response.data.data;
             this.currentPage = pageNumber;
 
-            // Récupérer le nombre total de pages à partir de l'en-tête Link
             const linkHeader = response.headers.link;
             if (linkHeader) {
               const totalPagesMatch = linkHeader.match(/page=(\d+)>; rel="last"/);
@@ -76,9 +86,29 @@ export default {
             console.error('Erreur lors de la récupération des personnages:', error);
           })
           .finally(() => {
-            this.loading = false; // Set loading to false when data fetching is complete
+            this.loading = false;
           });
       }
+    },
+    search() {
+      this.loading = true;
+      this.personnages = []; // Clear existing data
+      
+      axios.get('https://api.potterdb.com/v1/characters', {
+        params: {
+          'filter[name_cont]': this.searchQuery,
+        }
+      })
+      .then(response => {
+        console.log('Résultats de la recherche:', response.data);
+        this.personnages = response.data.data;
+      })
+      .catch(error => {
+        console.error('Erreur lors de la recherche des personnages:', error);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
     },
   },
 };
@@ -108,5 +138,21 @@ export default {
   text-align: center;
   margin: 20px 0;
   font-weight: bold;
+}
+
+.search-bar{
+  height: 0px;
+  width: 300px;
+  padding: 20px;
+  border-radius: 200px;
+  font-size: large;
+}
+
+.top-of-page{
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 0 .5vh 0 .5vh;
+  align-items: center;
 }
 </style>
